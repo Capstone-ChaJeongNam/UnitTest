@@ -3,8 +3,11 @@ package com.unittest.anychartdemo;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.anychart.anychart.CartesianSeriesLine;
@@ -28,17 +31,32 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     @Override
+    protected void onStart() {
+        super.onStart();
+//        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         setContentView(R.layout.activity_main);
-        AnyChartView anyChartView = findViewById(R.id.any_chart_view);
-//        anyChartView.setProgressBar(findViewById(R.id.progress_bar));
 
+
+        AnyChartView anyChartView = findViewById(R.id.any_chart_view);
+        anyChartView.setProgressBar(findViewById(R.id.progress_bar));
+        Button button = findViewById(R.id.button);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, TestActivity.class));
+            }
+        });
         Cartesian cartesian = AnyChart.line();
 
-        cartesian.setAnimation(true);
+//        cartesian.setAnimation(true);
 
         cartesian.setPadding(10d, 20d, 5d, 20d);
 
@@ -134,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
         cartesian.setPadding(0d, 0d, 10d, 0d);
 
         anyChartView.setChart(cartesian);
+
+
     }
 
     private class CustomDataEntry extends ValueDataEntry {
