@@ -1,6 +1,8 @@
 package com.unittest.firebasedemo;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +12,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.unittest.firebasedemo.adapter.MessageAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // region Firebase
-        /** 
+        /**
          * Firebase Realtime Database 인스턴스 저장(연결)
          * message 라는 하위 경로 존재하면 그대로 사용
          * 아니면 새로 생성
@@ -92,6 +95,10 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "content is: " + value.getContent());
                     Log.d(TAG, "key is: " + value.getKey());//add result into array list
                 }
+                RecyclerView messageRecyclerView = findViewById(R.id.messageRecyclerView);
+                messageRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                MessageAdapter messageAdapter = new MessageAdapter(messages);
+                messageRecyclerView.setAdapter(messageAdapter);
 //                Message value = dataSnapshot.getValue(Message.class);
 
             }
@@ -104,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //endregion
+
+
     }
 
 }
