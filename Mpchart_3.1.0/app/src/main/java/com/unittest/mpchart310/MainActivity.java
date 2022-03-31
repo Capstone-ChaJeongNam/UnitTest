@@ -54,8 +54,11 @@ public class MainActivity extends AppCompatActivity {
         x.setPosition(XAxis.XAxisPosition.BOTTOM);
 //        x.setDrawGridLines(false);
         x.setAxisMinimum(0f);
-//        x.enableAxisLineDashedLine(1f,1f,0f);
+        x.setAxisMaximum(5f);
+        x.setLabelCount(6, true);
         x.setGridLineWidth(1f);
+
+//        x.enableAxisLineDashedLine(1f,1f,0f);
 //        x.setValueFormatter(new IndexAxisValueFormatter(){
 //            @Override
 //            public String getFormattedValue(float value) {
@@ -63,9 +66,6 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        chart.getXAxis().setLabelCount(6, /*force: */true);
-        chart.getXAxis().setAxisMinimum(0);
-        chart.getXAxis().setAxisMaximum(5);
         List<String> y = new ArrayList<>();
         y.add("0");
         y.add("1");
