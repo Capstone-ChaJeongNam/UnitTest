@@ -15,7 +15,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.unittest.firebasedemo.adapter.MessageAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG = "Firebase";
@@ -112,6 +114,38 @@ public class MainActivity extends AppCompatActivity {
 
         //endregion
 
+        DatabaseReference historyRef = database.getReference("histories");
+        DatabaseReference consequenceRef = historyRef
+                .child("BdSF13_Fxg34")
+                .child("점자")
+                .child("한글점자")
+                .child("초성 자음자와 겹글자를 알고 읽고 쓴다")
+                .child("consequences");
+
+        List<String> dates = new ArrayList<>();
+        List<Long> scores = new ArrayList<>();
+
+        consequenceRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Map<String, Long> value = (HashMap<String, Long>) dataSnapshot.getValue();
+
+                for (String date: value.keySet()) {
+                    dates.add(date);
+                    Log.d("date", date);
+                }
+
+                for(Long score : value.values())
+                    scores.add(score);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
 
     }
 
