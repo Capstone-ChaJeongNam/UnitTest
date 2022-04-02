@@ -1,9 +1,11 @@
 package com.unittest.firebasedemo;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -12,15 +14,23 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.unittest.firebasedemo.adapter.MessageAdapter;
+import com.unittest.firebasedemo.adapter.GraphAdapter;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG = "Firebase";
+    List<Consequence> consequences;
+    List<Question> questions = new ArrayList<>();
+    GraphAdapter graphAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
          *
          * 저장한 key값의 하위 경로에 message 객체 저장
          */
-        myRef.child(key).setValue(message);
+//        myRef.child(key).setValue(message);
 //        myRef.setValue(message);
 
         /**
@@ -97,10 +107,10 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "content is: " + value.getContent());
                     Log.d(TAG, "key is: " + value.getKey());//add result into array list
                 }
-                RecyclerView messageRecyclerView = findViewById(R.id.messageRecyclerView);
-                messageRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                MessageAdapter messageAdapter = new MessageAdapter(messages);
-                messageRecyclerView.setAdapter(messageAdapter);
+//                RecyclerView messageRecyclerView = findViewById(R.id.messageRecyclerView);
+//                messageRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+//                MessageAdapter messageAdapter = new MessageAdapter(messages);
+//                messageRecyclerView.setAdapter(messageAdapter);
 //                Message value = dataSnapshot.getValue(Message.class);
 
             }
@@ -122,22 +132,33 @@ public class MainActivity extends AppCompatActivity {
                 .child("초성 자음자와 겹글자를 알고 읽고 쓴다")
                 .child("consequences");
 
-        List<String> dates = new ArrayList<>();
-        List<Long> scores = new ArrayList<>();
 
-        consequenceRef.addValueEventListener(new ValueEventListener() {
+    getQuestions(historyRef);
+
+
+
+    }
+    private int count;
+
+    public void getQuestions(DatabaseReference historyRef){
+        DatabaseReference questionRef = historyRef
+                .child("BdSF13_Fxg34")
+                .child("점자")
+                .child("한글점자");
+
+        questions = new ArrayList<>();
+
+        questionRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                Map<String, Long> value = (HashMap<String, Long>) dataSnapshot.getValue();
+                Map<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
 
-                for (String date: value.keySet()) {
-                    dates.add(date);
-                    Log.d("date", date);
+                for (String key : map.keySet()) {
+                    getCons(key, questionRef);
                 }
+                count = map.size();
 
-                for(Long score : value.values())
-                    scores.add(score);
             }
 
             @Override
@@ -146,7 +167,67 @@ public class MainActivity extends AppCompatActivity {
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
+    }
+    public void getCons(String title, DatabaseReference questionRef){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference historyRef = database.getReference("histories");
+        DatabaseReference consequenceRef = questionRef
+//                .child("BdSF13_Fxg34")
+//                .child("점자")
+//                .child("한글점자")
+                .child(title)
+                .child("consequences");
+
+        consequenceRef.orderByKey().addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Map<String, Long> map = (HashMap<String, Long>) dataSnapshot.getValue();
+                map = sortMapByKey(map);
+                Set<String> keySet = map.keySet();
+                Collection<Long> values = map.values();
+
+                List<String> dates = new ArrayList<>(keySet);
+                List<Long> scores = new ArrayList<>(values);
+                consequences = new ArrayList<>();
+
+                for (int i = 0; i < dates.size(); i++) {
+                    consequences.add(new Consequence(dates.get(i), scores.get(i)));
+                }
+                questions.add(new Question(title, consequences));
+
+                if (questions.size() == count){
+                    RecyclerView messageRecyclerView = findViewById(R.id.messageRecyclerView);
+                    messageRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                    graphAdapter = new GraphAdapter(questions);
+                    messageRecyclerView.setAdapter(graphAdapter);
+                }
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+
+
+        });
 
     }
+
+    public LinkedHashMap<String, Long> sortMapByKey(Map<String, Long> map) {
+        List<Map.Entry<String, Long>> entries = new LinkedList<>(map.entrySet());
+        Collections.sort(entries, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
+
+        LinkedHashMap<String, Long> result = new LinkedHashMap<>();
+        for (Map.Entry<String, Long> entry : entries) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
+
 
 }
