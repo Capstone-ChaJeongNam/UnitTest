@@ -43,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:background="@color/white"
@@ -63,19 +63,34 @@
 <!--                app:layout_constraintBottom_toBottomOf="parent"-->
 <!--                app:layout_constraintStart_toStartOf="parent"-->
 <!--                app:layout_constraintTop_toTopOf="parent" />-->
-
             <TextView
                 android:layout_width="70dp"
                 android:layout_height="30dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="5dp"
                 android:background="@drawable/rounded_button_background"
                 android:paddingTop="5dp"
                 android:text="일별"
                 android:textAlignment="center"
                 android:textColor="@color/black"
-                android:layout_marginBottom="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/dateTextView"
+                android:layout_width="70dp"
+                android:layout_height="30dp"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/rounded_button_background"
+                android:paddingTop="5dp"
+                android:text="날짜 선택"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
