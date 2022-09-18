@@ -1,4 +1,7 @@
 package com.unittest.retrofit2java;
+
+import java.util.UUID;
+
 public class User {
     private String birth;
     private String email;
@@ -34,6 +37,13 @@ public class User {
     }
 
     public void setName(String name) {
+        this.name = name;
+    }
+
+    public User(String birth, String email, String name) {
+        this.birth = birth;
+        this.email = email;
+        this.uid = UUID.randomUUID().toString();
         this.name = name;
     }
 
