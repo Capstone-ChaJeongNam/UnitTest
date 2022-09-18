@@ -24,8 +24,9 @@ public class MainActivity extends AppCompatActivity {
     Retrofit retrofit;
     JsonApi jsonApi;
     Call<List<PatientData>> call;
-    Call<User> call2;
+    Call<String> call2;
     Call<String> categoryListCall;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,24 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         jsonApi = retrofit.create(JsonApi.class);
+        call2 = jsonApi.postUser(new User("970101", "abc@gmail.com", "홍길동"));
+        call2.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    TextView textView = (TextView) findViewById(R.id.textView);
+                    //자바 객체로 변환된 JSON데이터 저장
+                    String str = response.body();
+                    textView.setText(str);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
+
 
 
     categoryListCall = jsonApi.getCategoryList();
@@ -52,10 +71,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onResponse(Call<String> call, Response<String> response) {
             if (response.isSuccessful()) {
-                TextView textView = (TextView) findViewById(R.id.textView);
-                //자바 객체로 변환된 JSON데이터 저장
-                String str = response.body();
-                textView.setText(str);
+//                TextView textView = (TextView) findViewById(R.id.textView);
+//                //자바 객체로 변환된 JSON데이터 저장
+//                String str = response.body();
+//                textView.setText(str);
             }
         }
 
